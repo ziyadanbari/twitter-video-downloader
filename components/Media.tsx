@@ -1,4 +1,4 @@
-import { Media, MediaTypes } from "@/types";
+import type { Media, MediaTypes } from "@/types";
 import Image from "next/image";
 import ImageGallery from "./ImageGallery";
 import Videos from "./Videos";
@@ -22,7 +22,7 @@ export default function Media({ media }: { media: Media }) {
         </div>
       </div>
       <div className="flex-1">
-        {type === MediaTypes.photo ? (
+        {type === "photo" ? (
           <ImageGallery medias={medias} />
         ) : (
           <Videos type={type} medias={medias} />

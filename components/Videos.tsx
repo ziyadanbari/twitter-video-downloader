@@ -1,5 +1,5 @@
 "use client";
-import { MediaMetaData, MediaTypes } from "@/types";
+import type { MediaMetaData, MediaTypes } from "@/types";
 import { kbpsToResolution } from "@/utils/convertKpbsToQuality";
 import { Download } from "lucide-react";
 import { useState } from "react";
@@ -45,7 +45,7 @@ export default function Videos({
           <button
             className="bg-blue-500 w-full py-2 flex justify-center gap-2 items-center text-center font-medium text-white"
             onClick={() => {
-              type === MediaTypes.animated_gif
+              type === "animated_gif"
                 ? handleDownload(medias[0].url, medias[0].content_type)
                 : setOpen((prev) => !prev);
             }}>
