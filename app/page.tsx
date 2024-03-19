@@ -34,7 +34,6 @@ export default function Page() {
         name: user.name,
         screen_name: user.screen_name,
       };
-      console.log(JSON.stringify(data));
       setMedia(data);
     } catch (error) {
       console.error("Error fetching media:", error);
