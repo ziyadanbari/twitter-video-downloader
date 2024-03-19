@@ -1,83 +1,115 @@
 "use client";
-import { useState } from "react";
-import axios from "axios";
-import cheerio from "cheerio";
+import Navbar from "@/components/Navbar";
+import { FileVideo, Link } from "lucide-react";
+import React, { useState } from "react";
+import { getMediaLink } from "../actions/getMediaLink"; // Correct path to getMediaLink
+import Media from "@/components/Media";
 
-export default function TwitterVideoDownloader() {
+export enum MediaTypes {
+  video = "video",
+  photo = "photo",
+  animated_gif = "animated_gif",
+}
+
+export interface Media {
+  type: MediaTypes;
+  duration?: number;
+  media: MediaMetaData[];
+  description?: string;
+  profile: string;
+  name: string;
+  screen_name: string;
+}
+
+export interface MediaMetaData {
+  url: string;
+  bitrate?: number;
+  content_type?: string;
+}
+
+export default function Page() {
+  // Capitalize component name
   const [url, setUrl] = useState<string>("");
-  const [downloaded, setDownloaded] = useState<boolean>(false);
-  const [error, setError] = useState<string | any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  function base64toBlob(base64Data: string, contentType: string) {
-    contentType = contentType || "";
-    var sliceSize = 1024;
-    var byteCharacters = atob(base64Data);
-    var bytesLength = byteCharacters.length;
-    var slicesCount = Math.ceil(bytesLength / sliceSize);
-    var byteArrays = new Array(slicesCount);
+  const [media, setMedia] = useState<Media | null>();
 
-    for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-      var begin = sliceIndex * sliceSize;
-      var end = Math.min(begin + sliceSize, bytesLength);
-
-      var bytes = new Array(end - begin);
-      for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
-        bytes[i] = byteCharacters[offset].charCodeAt(0);
-      }
-      byteArrays[sliceIndex] = new Uint8Array(bytes);
-    }
-    return new Blob(byteArrays, { type: contentType });
-  }
-
-  const downloadTwitterVideo = async () => {
+  const submitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      setLoading(true);
-      const response = await axios.post("/api/download", {
-        twitterUrl: url,
-      });
-      const base64: string | undefined = response.data.base64;
-      if (!base64) {
-        throw new Error("Could not find video URL");
-      }
-
-      const blob = base64toBlob(base64, "video/mp4");
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = downloadUrl;
-      a.download = "download.mp4";
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-
-      setDownloaded(true);
-    } catch (error: any) {
-      setError("Error fetching Twitter video: " + error.message);
-    } finally {
-      setLoading(false);
+      const response = await getMediaLink(url);
+      console.log(response);
+      const media = response.media;
+      const user = response.user;
+      const type: MediaTypes = media.photo?.length
+        ? MediaTypes.photo
+        : media.video.type;
+      const data: Media = {
+        type,
+        duration:
+          type === MediaTypes.photo ? undefined : media.video.duration_millis,
+        media:
+          type === MediaTypes.photo
+            ? media.photo.map(({ url }: { url: string }) => ({ url }))
+            : media.video.videoVariants,
+        profile: user.profile,
+        name: user.name,
+        screen_name: user.screen_name,
+      };
+      console.log(JSON.stringify(data));
+      setMedia(data);
+    } catch (error) {
+      console.error("Error fetching media:", error);
     }
   };
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center">
-      <div>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          className="bg-gray-600 px-4 py-2 rounded border-white border-2"
-          placeholder="Enter Twitter video URL"
-        />
-        <button
-          className="bg-blue-500 p-2 rounded mx-4"
-          onClick={downloadTwitterVideo}>
-          Download Video
-        </button>
-        <div className="text-center my-2">
-          {downloaded && <div>Video downloaded successfully!</div>}
-          {error && <div>{error}</div>}
-          {loading && <div>Loading...</div>}
+    <main className="w-full h-full">
+      <div className="flex flex-col gap-6 w-full h-full">
+        <div>
+          <Navbar />
+        </div>
+        <div className="flex-1 flex justify-center items-center px-4">
+          <div className="flex flex-col gap-4">
+            <div className="md:text-5xl sm:text-4xl text-3xl font-bold -tracking-wide text-center">
+              Twitter video downloader
+            </div>
+            <form onSubmit={submitHandler} className="flex flex-col gap-4">
+              <div className="rounded bg-gray-300 w-full h-full flex items-center gap-3 px-2">
+                <span>
+                  <Link className=" stroke-gray-500" />
+                </span>
+                <input
+                  value={url}
+                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                    setUrl(e.currentTarget.value)
+                  }
+                  className="w-full py-4 bg-transparent outline-none border-none"
+                  type="text"
+                  placeholder="Tweet link ex: https://twitter.com/Shou..."
+                />
+              </div>
+              <div className="flex justify-center">
+                <button className="bg-blue-500 text-lg text-white text-center py-3 w-2/4 rounded font-semibold flex justify-center gap-3 items-center hover:bg-blue-600 transition-all duration-200">
+                  <div>
+                    <FileVideo />
+                  </div>
+                  <div>Load Medias</div>
+                </button>
+              </div>
+            </form>
+            <div className="bg-gray-300 md:w-2/3 w-[90%] aspect-square max-h-[450px] mx-auto rounded p-2">
+              {media ? (
+                <Media media={media} />
+              ) : (
+                <div className="w-full h-full flex justify-center items-center">
+                  <div className="text-gray-600 text-lg font-medium">
+                    No media loaded
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
