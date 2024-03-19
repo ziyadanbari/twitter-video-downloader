@@ -10,10 +10,12 @@ export default function Page() {
   // Capitalize component name
   const [url, setUrl] = useState<string>("");
   const [media, setMedia] = useState<Media | null>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       const response = await getMediaLink(url);
       const media = response.media;
       const user = response.user;
@@ -36,6 +38,8 @@ export default function Page() {
       setMedia(data);
     } catch (error) {
       console.error("Error fetching media:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -67,10 +71,16 @@ export default function Page() {
               </div>
               <div className="flex justify-center">
                 <button className="bg-blue-500 text-lg text-white text-center py-3 w-2/4 rounded font-semibold flex justify-center gap-3 items-center hover:bg-blue-600 transition-all duration-200">
-                  <div>
-                    <FileVideo />
-                  </div>
-                  <div>Load Medias</div>
+                  {!isLoading ? (
+                    <>
+                      <div>
+                        <FileVideo />
+                      </div>
+                      <div>Load Medias</div>
+                    </>
+                  ) : (
+                    <span className="loading"></span>
+                  )}
                 </button>
               </div>
             </form>
