@@ -7,7 +7,7 @@ export default function TwitterVideoDownloader() {
   const [url, setUrl] = useState<string>("");
   const [downloaded, setDownloaded] = useState<boolean>(false);
   const [error, setError] = useState<string | any>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
   function base64toBlob(base64Data: string, contentType: string) {
     contentType = contentType || "";
     var sliceSize = 1024;
@@ -31,7 +31,7 @@ export default function TwitterVideoDownloader() {
 
   const downloadTwitterVideo = async () => {
     try {
-      console.log(url);
+      setLoading(true);
       const response = await axios.post("/api/download", {
         twitterUrl: url,
       });
@@ -52,6 +52,8 @@ export default function TwitterVideoDownloader() {
       setDownloaded(true);
     } catch (error: any) {
       setError("Error fetching Twitter video: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,6 +75,7 @@ export default function TwitterVideoDownloader() {
         <div className="text-center my-2">
           {downloaded && <div>Video downloaded successfully!</div>}
           {error && <div>{error}</div>}
+          {loading && <div>Loading...</div>}
         </div>
       </div>
     </div>
