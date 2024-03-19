@@ -3,29 +3,8 @@ import Navbar from "@/components/Navbar";
 import { FileVideo, Link } from "lucide-react";
 import React, { useState } from "react";
 import { getMediaLink } from "../actions/getMediaLink"; // Correct path to getMediaLink
-import Media from "@/components/Media";
-
-export enum MediaTypes {
-  video = "video",
-  photo = "photo",
-  animated_gif = "animated_gif",
-}
-
-export interface Media {
-  type: MediaTypes;
-  duration?: number;
-  media: MediaMetaData[];
-  description?: string;
-  profile: string;
-  name: string;
-  screen_name: string;
-}
-
-export interface MediaMetaData {
-  url: string;
-  bitrate?: number;
-  content_type?: string;
-}
+import MediaShow from "@/components/Media";
+import { MediaMetaData, MediaTypes, Media } from "@/types";
 
 export default function Page() {
   // Capitalize component name
@@ -36,7 +15,6 @@ export default function Page() {
     e.preventDefault();
     try {
       const response = await getMediaLink(url);
-      console.log(response);
       const media = response.media;
       const user = response.user;
       const type: MediaTypes = media.photo?.length
@@ -98,7 +76,7 @@ export default function Page() {
             </form>
             <div className="bg-gray-300 md:w-2/3 w-[90%] aspect-square max-h-[450px] mx-auto rounded p-2">
               {media ? (
-                <Media media={media} />
+                <MediaShow media={media} />
               ) : (
                 <div className="w-full h-full flex justify-center items-center">
                   <div className="text-gray-600 text-lg font-medium">

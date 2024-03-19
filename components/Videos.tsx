@@ -1,5 +1,5 @@
 "use client";
-import { MediaMetaData, MediaTypes } from "@/app/page";
+import { MediaMetaData, MediaTypes } from "@/types";
 import { kbpsToResolution } from "@/utils/convertKpbsToQuality";
 import { Download } from "lucide-react";
 import { useState } from "react";

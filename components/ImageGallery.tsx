@@ -1,4 +1,4 @@
-import { MediaMetaData } from "@/app/page";
+import { MediaMetaData } from "@/types";
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import React, { useState } from "react";
 

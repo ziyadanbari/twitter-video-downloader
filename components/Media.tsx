@@ -1,4 +1,4 @@
-import { Media, MediaTypes } from "@/app/page";
+import { Media, MediaTypes } from "@/types";
 import Image from "next/image";
 import ImageGallery from "./ImageGallery";
 import Videos from "./Videos";
