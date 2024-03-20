@@ -55,17 +55,14 @@ export default function ImageGallery({ medias }: { medias: MediaMetaData[] }) {
             </div>
           </div>
           <div className="h-full">
-            {medias.map(({ url }: { url: string }, index: number) => (
-              <div
-                key={index}
-                className=" select-none h-full"
-                style={{
-                  background: `url('${url}')`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center",
-                  backgroundSize: "contain",
-                }}></div>
-            ))}
+            <div
+              className=" select-none h-full w-full bg-no-repeat bg-center bg-contain"
+              style={{
+                backgroundImage: `url('${medias[currentIndex].url}')`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundSize: "contain",
+              }}></div>
           </div>
         </div>
         <div>

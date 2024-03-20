@@ -9,7 +9,7 @@ export async function getMediaLink(url: string) {
       url,
     },
     headers: {
-      "X-RapidAPI-Key": "73cfd2a0ecmshbc5e01564a432abp1d656ajsn2878a3f3e2dc",
+      "X-RapidAPI-Key": "8058f8f606mshe2bf5e6b030e7edp1d61a1jsndc416c7246d6",
       "X-RapidAPI-Host":
         "twitter-downloader-download-twitter-videos-gifs-and-images.p.rapidapi.com",
     },
